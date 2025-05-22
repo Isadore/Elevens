@@ -1,0 +1,29 @@
+Deck Class
+    -Fields
+        -Card[] cards
+    -Methods
+        -void Shuffle()
+        -Card TakeTopCard()
+Card Class
+    -Fields
+        -Suit suit
+        -Rank rank
+    -Properties
+        -getSuit
+        -getRank
+    -Constructors
+        -public Card(Suit suit, Rank rank)
+Game Class
+    -Fields
+        -private int pairvalue
+        -private Deck deck
+        -private CardTable List<Card> Cards currently visible on table (Max 9)
+        -private SelectedCards List<Card> Cards selected by user in console
+        -private int GamesPlayed Number of games played by user
+        -private int Wins Number of games won by user
+    -Constructors
+        -public Game(int pairvalue = 11) Initialize game object and specify sum of card pair to remove cards from table (default 11) 
+    -Methods
+        -public void GameLoop() Handles user input, card selections and game outcome
+        -private void DisplayCards() Prints card table layout to console
+        -private bool CheckSelectedCards() Evaluates cards in the SelectedCards
