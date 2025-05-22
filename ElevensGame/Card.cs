@@ -6,7 +6,8 @@
     Suit suit;
 
     //Card Constructor
-    public Card(Rank rank, Suit suit) {
+    public Card(Rank rank, Suit suit)
+    {
         this.rank = rank;
         this.suit = suit;
     }
@@ -14,15 +15,24 @@
     //Define properties for all above fields
     //code example: public Suit Suit { get { return suit; } }
 
-    public Rank Rank {
-        get {
+    public Rank Rank
+    {
+        get
+        {
             return rank;
         }
     }
 
-    public Suit Suit {
-        get {
+    public Suit Suit
+    {
+        get
+        {
             return suit;
         }
+    }
+
+    public int getRankNum()
+    {
+        return ((int)rank) + 1;
     }
 }
