@@ -126,7 +126,22 @@ public class Game
                 SelectedCards.Clear();
             }
         }
+        //Clear selected cards
+        else if (k == ConsoleKey.X)
+        {
+            SelectedCards.Clear();
+        }
+        else if (k == ConsoleKey.H)
+        {
+            ShowInstructions = !ShowInstructions;
+        }
+        //Quit app
+        else if (k == ConsoleKey.Q)
+        {
+            Environment.Exit(0);
+        }
     }
+    //Prints 9 card table to console
     public void DisplayTable()
     {
         for (int i = 0; i < CardTable.Length; i++)
