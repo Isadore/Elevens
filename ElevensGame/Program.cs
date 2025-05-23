@@ -12,7 +12,13 @@
     public void GameLoop() { }
     public void DisplayTable()
     {
-        
+        for (int i = 0; i < CardTable.Count; i++)
+        {
+            if (i > 0 && i % 3 == 0) Console.WriteLine();
+            Card card = CardTable[i];
+            Console.Write(string.Format("{0, 2} {1} {2}", card.RankAbbreviated(), card.SuitSymbol(isCardSelected(i)), i == CardHoveringIndex ? "*  " : "   "));
+        }
+        Console.WriteLine();
     }
     public bool CheckSelectedCards()
     {
