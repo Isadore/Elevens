@@ -42,7 +42,14 @@
         }
         return false;
     }
-    
-    
 
+    private bool isCardSelected(int i)
+    {
+
+        foreach ((Card, int) ci in SelectedCards)
+        {
+            if (ci.Item2 == i) return true;
+        }
+        return false;
+    }
 }
