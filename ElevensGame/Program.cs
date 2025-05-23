@@ -4,13 +4,15 @@ public class Game
 {
     private int pairvalue;
     private Deck deck;
-    private List<Card> CardTable;
+    private Card?[] CardTable;
     private List<(Card, int)> SelectedCards; // (Card, CardTable Index)
+    private int Wins;
+    private int Losses;
     public Game(int pairvalue = 11)
     {
         this.pairvalue = pairvalue;
         deck = new();
-        CardTable = new();
+        CardTable = new Card[9];
         SelectedCards = new();
         deck.Shuffle();
     }
@@ -19,30 +21,55 @@ public class Game
     public void GameLoop()
     {
         Console.OutputEncoding = Encoding.UTF8;
-        for (int i = 0; i < 9; i++) CardTable.Add(deck.TakeTopCard());
+        for (int i = 0; i < 9; i++) CardTable[i] = deck.TakeTopCard();
         while (true)
         {
             Console.Clear();
+            Console.WriteLine("Wins: " + Wins + " Losses: " + Losses);
             Console.WriteLine("Cards remaining in deck: " + deck.Cards.Count);
             DisplayTable();
-            ConsoleKey k = Console.ReadKey().Key;
-            if (k == ConsoleKey.DownArrow)
+            if (!TableContainsValidCombo())
             {
-                if (CardHoveringIndex < 6) CardHoveringIndex += 3;
+                Console.WriteLine("Game over. No valid card combinations remain on the table. Press Enter to play again.");
+                Losses++;
+                Console.ReadLine();
+                RestartGame();
             }
-            else if (k == ConsoleKey.RightArrow)
+            else
             {
-                if ((CardHoveringIndex + 1) % 3 != 0) CardHoveringIndex++;
+                ReadUserKeyInput();
             }
-            else if (k == ConsoleKey.UpArrow)
-            {
-                if (CardHoveringIndex > 2) CardHoveringIndex -= 3;
-            }
-            else if (k == ConsoleKey.LeftArrow)
-            {
-                if ((CardHoveringIndex + 1) % 3 != 1) CardHoveringIndex--;
-            }
-            else if (k == ConsoleKey.Spacebar)
+        }
+    }
+    public void RestartGame()
+    {
+        SelectedCards.Clear();
+        deck = new();
+        deck.Shuffle();
+        for (int i = 0; i < 9; i++) CardTable[i] = deck.TakeTopCard();
+    }
+    public void ReadUserKeyInput()
+    {
+        ConsoleKey k = Console.ReadKey().Key;
+        if (k == ConsoleKey.DownArrow)
+        {
+            if (CardHoveringIndex < 6) CardHoveringIndex += 3;
+        }
+        else if (k == ConsoleKey.RightArrow)
+        {
+            if ((CardHoveringIndex + 1) % 3 != 0) CardHoveringIndex++;
+        }
+        else if (k == ConsoleKey.UpArrow)
+        {
+            if (CardHoveringIndex > 2) CardHoveringIndex -= 3;
+        }
+        else if (k == ConsoleKey.LeftArrow)
+        {
+            if ((CardHoveringIndex + 1) % 3 != 1) CardHoveringIndex--;
+        }
+        else if (k == ConsoleKey.Spacebar)
+        {
+            if (CardTable[CardHoveringIndex] != null)
             {
                 if (!isCardSelected(CardHoveringIndex))
                 {
@@ -53,25 +80,43 @@ public class Game
                     SelectedCards.RemoveAll(ci => ci.Item2 == CardHoveringIndex);
                 }
             }
-            else if (k == ConsoleKey.Enter)
+        }
+        else if (k == ConsoleKey.Enter)
+        {
+            foreach ((Card, int) ci in SelectedCards) Console.WriteLine(ci.Item2);
+            if (CheckSelectedCards())
             {
-                if (CheckSelectedCards())
+                int cardstoadd = SelectedCards.Count;
+                if (deck.Cards.Count < cardstoadd) cardstoadd = deck.Cards.Count;
+                foreach ((Card, int) ci in SelectedCards)
                 {
-                    foreach ((Card, int) ci in SelectedCards)
+                    if (cardstoadd > 0)
                     {
-                        
+                        CardTable[ci.Item2] = deck.TakeTopCard();
+                    }
+                    else
+                    {
+                        CardTable[ci.Item2] = null;
                     }
                 }
+                SelectedCards.Clear();
             }
         }
     }
     public void DisplayTable()
     {
-        for (int i = 0; i < CardTable.Count; i++)
+        for (int i = 0; i < CardTable.Length; i++)
         {
             if (i > 0 && i % 3 == 0) Console.WriteLine();
-            Card card = CardTable[i];
-            Console.Write(string.Format("{0, 2} {1} {2}", card.RankAbbreviated(), card.SuitSymbol(isCardSelected(i)), i == CardHoveringIndex ? "*  " : "   "));
+            Card? card = CardTable[i];
+            if (card != null)
+            {
+                Console.Write(string.Format("{0, 2} {1} {2}", card.RankAbbreviated(), card.SuitSymbol(isCardSelected(i)), i == CardHoveringIndex ? "*  " : "   "));
+            }
+            else
+            {
+                Console.Write(string.Format("{0, 2} {1} {2}", "", " ", i == CardHoveringIndex ? "*  " : "   "));
+            }
         }
         Console.WriteLine();
     }
@@ -91,13 +136,39 @@ public class Game
             {
                 if (ci.Item1.Rank == Rank.Jack) jack = true;
                 if (ci.Item1.Rank == Rank.Queen) queen = true;
-                if (ci.Item1.Rank == Rank.Queen) queen = true;
+                if (ci.Item1.Rank == Rank.King) king = true;
             }
             return jack && queen && king;
         }
         return false;
     }
-
+    private bool TableContainsValidCombo()
+    {
+        bool jack = false;
+        bool queen = false;
+        bool king = false;
+        for (int i = 0; i < CardTable.Length; i++)
+        {
+            Card? c = CardTable[i];
+            if (c != null)
+            {
+                if (c.Rank == Rank.Jack) jack = true;
+                else if (c.Rank == Rank.Queen) queen = true;
+                else if (c.Rank == Rank.King) king = true;
+                else if (i < (CardTable.Length - 1))
+                {
+                    int currval = c.getRankNum();
+                    for (int j = i + 1; j < CardTable.Length; j++)
+                    {
+                        Card? c1 = CardTable[j];
+                        if (c1 != null && c1.getRankNum() + currval == 11) return true;
+                    }
+                }
+            }
+            if (jack && queen && king) return true;
+        }
+        return false;
+    }
     private bool isCardSelected(int i)
     {
 
