@@ -7,7 +7,12 @@
     public Game(int pairvalue = 11)
     {
         this.pairvalue = pairvalue;
+        deck = new();
+        CardTable = new();
+        SelectedCards = new();
+        deck.Shuffle();
     }
+    private int CardHoveringIndex = 0;
 
     public void GameLoop() { }
     public void DisplayTable()
