@@ -36,7 +36,14 @@ public class Game
             Console.WriteLine("Wins: " + Wins + " Losses: " + Losses);
             Console.WriteLine("Cards remaining in deck: " + deck.Cards.Count);
             DisplayTable();
-            if (!TableContainsValidCombo())
+            if (CheckForWin())
+            {
+                Console.WriteLine("You won! Press Enter to continue.");
+                Wins++;
+                Console.ReadLine();
+                RestartGame();
+            }
+            else if (!TableContainsValidCombo())
             {
                 Console.WriteLine("Game over. No valid card combinations remain on the table. Press Enter to play again.");
                 Losses++;
@@ -177,7 +184,21 @@ public class Game
         }
         return false;
     }
-    private bool isCardSelected(int i)
+    //Check if table and deck are empty for user win
+    private bool CheckForWin()
+    {
+        if (deck.Cards.Count == 0)
+        {
+            foreach (Card? c in CardTable)
+            {
+                if (c != null) return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    //Check by table index if card is currently selected
+    private bool IsCardSelected(int i)
     {
 
         foreach ((Card, int) ci in SelectedCards)
