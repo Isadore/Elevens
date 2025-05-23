@@ -62,6 +62,15 @@ public class Game
         deck = new();
         deck.Shuffle();
         for (int i = 0; i < 9; i++) CardTable[i] = deck.TakeTopCard();
+        if (!TableContainsValidCombo())
+        {
+            RestartGame();
+        }
+        else
+        {
+            CardHoveringIndex = 4;
+            SelectedCards.Clear();
+        }
     }
     public void ReadUserKeyInput()
     {
