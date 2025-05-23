@@ -1,4 +1,6 @@
-﻿class Game
+﻿using System.Text;
+
+public class Game
 {
     private int pairvalue;
     private Deck deck;
@@ -14,7 +16,55 @@
     }
     private int CardHoveringIndex = 0;
 
-    public void GameLoop() { }
+    public void GameLoop()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+        for (int i = 0; i < 9; i++) CardTable.Add(deck.TakeTopCard());
+        while (true)
+        {
+            Console.Clear();
+            Console.WriteLine("Cards remaining in deck: " + deck.Cards.Count);
+            DisplayTable();
+            ConsoleKey k = Console.ReadKey().Key;
+            if (k == ConsoleKey.DownArrow)
+            {
+                if (CardHoveringIndex < 6) CardHoveringIndex += 3;
+            }
+            else if (k == ConsoleKey.RightArrow)
+            {
+                if ((CardHoveringIndex + 1) % 3 != 0) CardHoveringIndex++;
+            }
+            else if (k == ConsoleKey.UpArrow)
+            {
+                if (CardHoveringIndex > 2) CardHoveringIndex -= 3;
+            }
+            else if (k == ConsoleKey.LeftArrow)
+            {
+                if ((CardHoveringIndex + 1) % 3 != 1) CardHoveringIndex--;
+            }
+            else if (k == ConsoleKey.Spacebar)
+            {
+                if (!isCardSelected(CardHoveringIndex))
+                {
+                    SelectedCards.Add((CardTable[CardHoveringIndex], CardHoveringIndex));
+                }
+                else
+                {
+                    SelectedCards.RemoveAll(ci => ci.Item2 == CardHoveringIndex);
+                }
+            }
+            else if (k == ConsoleKey.Enter)
+            {
+                if (CheckSelectedCards())
+                {
+                    foreach ((Card, int) ci in SelectedCards)
+                    {
+                        
+                    }
+                }
+            }
+        }
+    }
     public void DisplayTable()
     {
         for (int i = 0; i < CardTable.Count; i++)
