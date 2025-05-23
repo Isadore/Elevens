@@ -25,6 +25,14 @@ public class Game
         while (true)
         {
             Console.Clear();
+            Console.WriteLine("Elevens Card Game");
+            if (ShowInstructions)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Game Rules:\n\tTo win the game you must successfully remove all cards from the 9 card table and the deck.\n\tYou can remove a pair of cards from Ace to 10 that adds up to 11 or a trio containing a Jack, Queen and King.");
+                Console.WriteLine("Game Controls:\n\tNavigate card table - Arrow Keys\n\tSelect Card - Space Bar\n\tCheck Selection - Enter\n\tDeselect All - X\n\tShow/Hide Game Instructions - H\n\tQuit Game - Q");
+                Console.WriteLine();
+            }
             Console.WriteLine("Wins: " + Wins + " Losses: " + Losses);
             Console.WriteLine("Cards remaining in deck: " + deck.Cards.Count);
             DisplayTable();
