@@ -8,6 +8,8 @@ public class Game
     private List<(Card, int)> SelectedCards; // (Card, CardTable Index)
     private int Wins;
     private int Losses;
+    private int CardHoveringIndex;
+    private bool ShowInstructions;
     public Game(int pairvalue = 11)
     {
         this.pairvalue = pairvalue;
@@ -15,13 +17,15 @@ public class Game
         CardTable = new Card[9];
         SelectedCards = new();
         deck.Shuffle();
+        CardHoveringIndex = 4;
+        Console.OutputEncoding = Encoding.UTF8;
+        ShowInstructions = true;
     }
-    private int CardHoveringIndex = 0;
+    
 
     public void GameLoop()
     {
-        Console.OutputEncoding = Encoding.UTF8;
-        for (int i = 0; i < 9; i++) CardTable[i] = deck.TakeTopCard();
+        RestartGame();
         while (true)
         {
             Console.Clear();
@@ -45,7 +49,7 @@ public class Game
             }
             else if (!TableContainsValidCombo())
             {
-                Console.WriteLine("Game over. No valid card combinations remain on the table. Press Enter to play again.");
+                Console.WriteLine("Game over. No valid card combinations remain on the table. Press Enter to continue.");
                 Losses++;
                 Console.ReadLine();
                 RestartGame();
@@ -58,9 +62,9 @@ public class Game
     }
     public void RestartGame()
     {
-        SelectedCards.Clear();
         deck = new();
         deck.Shuffle();
+        //Set card table initially
         for (int i = 0; i < 9; i++) CardTable[i] = deck.TakeTopCard();
         if (!TableContainsValidCombo())
         {
@@ -75,27 +79,32 @@ public class Game
     public void ReadUserKeyInput()
     {
         ConsoleKey k = Console.ReadKey().Key;
+        //Move down on card table
         if (k == ConsoleKey.DownArrow)
         {
             if (CardHoveringIndex < 6) CardHoveringIndex += 3;
         }
+        //Move right on card table
         else if (k == ConsoleKey.RightArrow)
         {
             if ((CardHoveringIndex + 1) % 3 != 0) CardHoveringIndex++;
         }
+        //Move up on card table
         else if (k == ConsoleKey.UpArrow)
         {
             if (CardHoveringIndex > 2) CardHoveringIndex -= 3;
         }
+        //Move left on card table
         else if (k == ConsoleKey.LeftArrow)
         {
             if ((CardHoveringIndex + 1) % 3 != 1) CardHoveringIndex--;
         }
+        //Select a card
         else if (k == ConsoleKey.Spacebar)
         {
             if (CardTable[CardHoveringIndex] != null)
             {
-                if (!isCardSelected(CardHoveringIndex))
+                if (!IsCardSelected(CardHoveringIndex))
                 {
                     SelectedCards.Add((CardTable[CardHoveringIndex], CardHoveringIndex));
                 }
@@ -105,6 +114,7 @@ public class Game
                 }
             }
         }
+        //Evaluate selected cards
         else if (k == ConsoleKey.Enter)
         {
             foreach ((Card, int) ci in SelectedCards) Console.WriteLine(ci.Item2);
@@ -150,7 +160,7 @@ public class Game
             Card? card = CardTable[i];
             if (card != null)
             {
-                Console.Write(string.Format("{0, 2} {1} {2}", card.RankAbbreviated(), card.SuitSymbol(isCardSelected(i)), i == CardHoveringIndex ? "*  " : "   "));
+                Console.Write(string.Format("{0, 2} {1} {2}", card.RankAbbreviated(), card.SuitSymbol(IsCardSelected(i)), i == CardHoveringIndex ? "*  " : "   "));
             }
             else
             {
@@ -159,6 +169,7 @@ public class Game
         }
         Console.WriteLine();
     }
+    //Checks if selected cards are a valid 11 pair or JQK trio
     private bool CheckSelectedCards()
     {
         if (SelectedCards.Count == 2)
@@ -181,6 +192,7 @@ public class Game
         }
         return false;
     }
+    //Checks if the table contains and valid pairs or trios
     private bool TableContainsValidCombo()
     {
         bool jack = false;
