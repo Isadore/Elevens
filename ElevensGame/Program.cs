@@ -20,7 +20,7 @@
         }
         Console.WriteLine();
     }
-    public bool CheckSelectedCards()
+    private bool CheckSelectedCards()
     {
         if (SelectedCards.Count == 2)
         {
